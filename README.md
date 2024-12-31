@@ -1,45 +1,35 @@
-GitHub Workflow Assistant
+# GitHub Workflow Assistant
 
 Author: Mena Yassa
 
 This n8n-powered workflow acts as an intelligent assistant for managing GitHub repositories. It provides capabilities for repository structure exploration, file content analysis, and branch management, offering a streamlined approach to interacting with GitHub repositories.
 
-Features
+## Features
 
-Automated repository structure analysis and navigation
+- Automated repository structure analysis and navigation
+- File content retrieval
+- Branch listing and comparison
+- Secure GitHub API integration
 
-File content retrieval
+## Use Cases
 
-Branch listing and comparison
+1. **Repository Exploration**
+   - Navigate through repository directories and files
+   - Retrieve specific files or code snippets
 
-Secure GitHub API integration
+2. **Branch Management**
+   - List all branches in a repository
+   - Compare branches to identify changes
 
-Use Cases
+3. **Code Understanding**
+   - Analyze repository structure
+   - Understand key files and project organization
 
-Repository Exploration
+## How to Use
 
-Navigate through repository directories and files
-
-Retrieve specific files or code snippets
-
-Branch Management
-
-List all branches in a repository
-
-Compare branches to identify changes
-
-Code Understanding
-
-Analyze repository structures
-
-Understand key files and project organization
-
-How to Use
-
-Trigger the workflow via the webhook endpoint provided by n8n.
-
-Send a POST request with the desired query structure:
-
+1. Trigger the workflow via the webhook endpoint provided by n8n
+2. Send a POST request with the desired query structure:
+```json
 {
     "query": "Your action or question",
     "repository_url": "The GitHub repository URL",
@@ -47,31 +37,27 @@ Send a POST request with the desired query structure:
         "param_name": "param_value"
     }
 }
+```
+## Example actions supported by the workflow (be sure to give the repository URL to the agent):
 
-Example actions supported by the workflow:
+- "Get the repository structure"
+- "List all branches"
+- "Compare two branches"
+- "Retrieve content of a specific file"
 
-"Get the repository structure"
+## Example Queries (be sure to give the repository URL to the agent):
 
-"List all branches"
+- "What is the structure of this repository?"
+- "Show me the contents of README.md in the repository"
+- "List all branches in this repository"
+- "Compare the 'main' branch with 'development'"
 
-"Compare two branches"
+## Limitations
 
-"Retrieve content of a specific file"
+- Requires valid GitHub repository URLs
+- Limited to accessible repositories as per API credentials
+- Response times depend on repository size and query complexity
 
-Example Queries
+## Contributing
 
-"What is the structure of this repository?"
-
-"Show me the contents of README.md in the repository"
-
-"List all branches in this repository"
-
-"Compare the 'main' branch with 'development'"
-
-Limitations
-
-Requires valid GitHub repository URLs
-
-Limited to accessible repositories as per API credentials
-
-Response times depend on repository size and query complexity
+This workflow is part of the n8n GitHub automation tools collection. For contributions or issues, please refer to the main repository guidelines.
