@@ -1,0 +1,753 @@
+{
+  "name": "GitHub",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        2900,
+        2000
+      ],
+      "id": "6ef0e8ac-bd19-4508-ab2b-d258dd6bf3bc",
+      "name": "When chat message received",
+      "webhookId": "a53d1d19-9486-4fd0-8bbf-4e97f886fbca"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a coding expert specializing in repository management. With access to GitHub, your role is to assist the user in managing their repositories, retrieving relevant information, and performing tasks such as analyzing code, tracking changes, and integrating workflows. Your focus is to provide clear, actionable insights and solutions for repository optimization."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        3300,
+        1900
+      ],
+      "id": "26911937-2cfe-46ec-bf54-6b094c6a9689",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-exp",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3160,
+        2200
+      ],
+      "id": "12be33c4-c13d-45a1-9a5e-80eef158f464",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KA1vIxEa4TtWbPgk",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        3300,
+        2200
+      ],
+      "id": "0a479ed1-93a3-4b72-91a8-a7958b57661a",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "LMrdLUMoeTrwOuFC",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "get_repo_structure",
+        "description": "Call this tool to get the entire structure of a GitHub repo given the URL of the repo.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "session_id",
+              "stringValue": "={{ $json.sessionId }}"
+            },
+            {
+              "name": "action",
+              "stringValue": "get_repo_structure"
+            }
+          ]
+        },
+        "specifyInputSchema": true,
+        "jsonSchemaExample": "{\n\t\"repository_url\": \"The URL to the GitHub repository\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3440,
+        2200
+      ],
+      "id": "9c327cc1-853e-417d-b2fb-eaacf8d5e292",
+      "name": "Call Get Repo Structure Tool"
+    },
+    {
+      "parameters": {
+        "name": "get_file_content",
+        "description": "Use this tool to get the contents of a file in the GitHub repository once you know the path to the file.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}",
+          "cachedResultName": "={{ $workflow.id }}"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "session_id",
+              "stringValue": "={{ $json.sessionId }}"
+            },
+            {
+              "name": "action",
+              "stringValue": "get_file_content"
+            }
+          ]
+        },
+        "specifyInputSchema": true,
+        "jsonSchemaExample": "{\n\t\"repository_url\": \"The URL to the GitHub repository\",\n    \"file_path\": \"The path to the file in the repository (README.md, public/icon.svg, etc.)\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3860,
+        2200
+      ],
+      "id": "9f789314-27f2-4fe8-b63a-ecbd536f90f2",
+      "name": "Call Get Repo File Content Tool"
+    },
+    {
+      "parameters": {
+        "name": "list_branches",
+        "description": "Call this tool to list all branches in a GitHub repository.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "session_id",
+              "stringValue": "={{ $json.sessionId }}"
+            },
+            {
+              "name": "action",
+              "stringValue": "list_branches"
+            }
+          ]
+        },
+        "specifyInputSchema": true,
+        "jsonSchemaExample": "{\n\t\"repository_url\": \"The URL to the GitHub repository\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3580,
+        2200
+      ],
+      "id": "9b72421a-16ed-4fe7-b9e7-790d672dd6b7",
+      "name": "Call List Branches Tool"
+    },
+    {
+      "parameters": {
+        "name": "compare_branches",
+        "description": "Call this tool to compare two branches in a GitHub repository.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "session_id",
+              "stringValue": "={{ $json.sessionId }}"
+            },
+            {
+              "name": "action",
+              "stringValue": "compare_branches"
+            }
+          ]
+        },
+        "specifyInputSchema": true,
+        "jsonSchemaExample": "{\n\t\"repository_url\": \"The URL to the GitHub repository\",\n    \"base_branch\": \"Branch to compare from\",\n    \"head_branch\": \"Branch to compare to\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3720,
+        2200
+      ],
+      "id": "fcf34c5c-572b-4fb7-a470-3105f22a20de",
+      "name": "Call Compare Branches Tool"
+    },
+    {
+      "parameters": {
+        "jsCode": "function parseGitHubUrl(githubUrl) {\n  if (typeof githubUrl !== \"string\" || githubUrl.trim() === \"\") {\n    throw new Error(\"Invalid input: GitHub URL must be a non-empty string.\");\n  }\n\n  const regex = /github\\.com[:/]([^/]+)\\/([^/]+?)(?:\\.git)?$/;\n  const match = githubUrl.match(regex);\n\n  if (!match) {\n    throw new Error(\"Invalid GitHub URL format.\");\n  }\n\n  const [, org, repo] = match;\n  return { org, repo };\n}\n\n// Usage with error handling\ntry {\n  const repositoryUrl = $(`Execute Workflow Trigger`).item.json.query.repository_url;\n  return parseGitHubUrl(repositoryUrl);\n} catch (error) {\n  return { error: error.message };\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        2680
+      ],
+      "id": "2b5e90cb-47a5-4e4c-ba24-75f69fafdb8f",
+      "name": "Parse GitHub URL"
+    },
+    {
+      "parameters": {
+        "url": "={{ `https://api.github.com/repos/${$json.org}/${$json.repo}/branches` }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3660,
+        2780
+      ],
+      "id": "752cd4a7-ddff-4fe4-af20-27105514dd12",
+      "name": "List Branches Request",
+      "credentials": {
+        "githubApi": {
+          "id": "MD5NjjA0AyNitSjg",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ `https://api.github.com/repos/${$json.org}/${$json.repo}/compare/${$json.baseBranch}...${$json.headBranch}` }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3660,
+        2980
+      ],
+      "id": "a009fd9e-e510-4288-9eb7-17a691d70808",
+      "name": "Compare Branches Request",
+      "credentials": {
+        "githubApi": {
+          "id": "MD5NjjA0AyNitSjg",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Execute Workflow Trigger').item.json.action }}",
+                    "rightValue": "get_repo_structure",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Execute Workflow Trigger').item.json.action }}",
+                    "rightValue": "get_file_content",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Execute Workflow Trigger').item.json.action }}",
+                    "rightValue": "list_branches",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Execute Workflow Trigger').item.json.action }}",
+                    "rightValue": "=compare_branches",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3360,
+        2660
+      ],
+      "id": "62dcedb5-b8f6-48ea-8cb0-cb741492695b",
+      "name": "Action Switch"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "github_invoke",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        1780
+      ],
+      "id": "53ce7a05-8599-4caf-b9cc-bf8df7cba557",
+      "name": "Webhook",
+      "webhookId": "0599870b-6a97-4b05-976d-03b03ab8d0c0"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3680,
+        1900
+      ],
+      "id": "866de3f4-f825-420b-9b95-0ac4717a961a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "chatInput",
+              "value": "={{ $json?.chatInput || $json.body.chatInput }}",
+              "type": "string"
+            },
+            {
+              "name": "sessionId",
+              "value": "={{ $json?.sessionId || $json.body.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3120,
+        1900
+      ],
+      "id": "fa67b1ac-b7c3-4af9-99c9-28f7baf713fa",
+      "name": "Set Chat Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{  `https://raw.githubusercontent.com/${$json.org}/${$json.repo}/main/${$('Execute Workflow Trigger').item.json.query.file_path}` }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3660,
+        2620
+      ],
+      "id": "7298c4a9-915f-435b-aa9f-6aaa5e99b074",
+      "name": "Get File Content",
+      "credentials": {
+        "githubApi": {
+          "id": "MD5NjjA0AyNitSjg",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function formatBranchList(branches, options = {}) {\n  // Default options\n  const {\n    branchSymbol = '🔖'\n  } = options;\n\n  // Validate input\n  if (!Array.isArray(branches)) {\n    throw new Error('Invalid input: branches must be an array.');\n  }\n\n  // Format branch names\n  const branchList = branches\n    .map(branch => `${branchSymbol} ${branch.json.name}`)\n    .join('\\n');\n\n  return branchList;\n}\n\n// Usage in n8n node\ntry {\n  const branches = $input.all();\n  return {\n    branches: formatBranchList(branches)\n  };\n} catch (error) {\n  return { error: error.message };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4120,
+        2780
+      ],
+      "id": "5624db41-f825-4110-91b1-f394e306a4af",
+      "name": "Format Branch List"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        2720,
+        2680
+      ],
+      "id": "48d3a51b-c48a-41c6-9342-cf46fc28f88b",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log(\"List Branches Request Output:\", $input.all());\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3900,
+        2780
+      ],
+      "id": "ebf08040-a2da-4f5b-9270-a948271dd711",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "function formatRepoStructure(tree, options = {}) {\n  // Default options\n  const {\n    excludedPaths = ['/node_modules/', '__pycache__/'],\n    folderSymbol = '📂',\n    fileSymbol = '📄',\n  } = options;\n\n  // Validate input\n  if (!Array.isArray(tree)) {\n    throw new Error('Invalid input: tree must be an array.');\n  }\n\n  // Filter and map tree structure\n  const structure = tree\n    .filter(item => !excludedPaths.some(excluded => item.path.includes(excluded)))\n    .map(item => `${item.type === 'tree' ? folderSymbol : fileSymbol} ${item.path}`);\n\n  // Return formatted structure\n  return structure.join('\\n');\n}\n\n// Usage example with error handling\ntry {\n  const tree = $('Get  Repo Structure').all()[0].json.tree; // Ensure this is valid in your framework\n  return {\n    structure: formatRepoStructure(tree),\n  };\n} catch (error) {\n  return { error: error.message };\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3880,
+        2440
+      ],
+      "id": "3dac6066-3ede-4634-b044-7db4ba6d48c4",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "url": "={{ `https://api.github.com/repos/${$json.org}/${$json.repo}/git/trees/main?recursive=1`}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3660,
+        2440
+      ],
+      "id": "b7ae5990-cf4b-429f-8eed-08f058bd03ad",
+      "name": "Get  Repo Structure",
+      "credentials": {
+        "githubApi": {
+          "id": "MD5NjjA0AyNitSjg",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  org: $json.org,\n  repo: $json.repo,\n  baseBranch: $('Execute Workflow Trigger').item.json.query.base_branch,\n  headBranch: $('Execute Workflow Trigger').item.json.query.head_branch,\n  action: $('Execute Workflow Trigger').item.json.action \n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3140,
+        2680
+      ],
+      "id": "9c852c17-a2ab-48cd-9449-c47a73495a99",
+      "name": "Prepare Data for Routing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Set Chat Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Chat Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse GitHub URL": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data for Routing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Get Repo Structure Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call List Branches Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Compare Branches Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Get Repo File Content Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Chat Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action Switch": {
+      "main": [
+        [
+          {
+            "node": "Get  Repo Structure",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get File Content",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List Branches Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Compare Branches Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Branches Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare Branches Request": {
+      "main": [
+        []
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse GitHub URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Format Branch List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get  Repo Structure": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data for Routing": {
+      "main": [
+        [
+          {
+            "node": "Action Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ca5193e3-d853-4921-9d69-5523e43ade9e",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "VqcghTXe5R7aN5bf",
+  "tags": []
+}
