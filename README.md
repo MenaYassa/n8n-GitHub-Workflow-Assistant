@@ -60,4 +60,4 @@ This n8n-powered workflow acts as an intelligent assistant for managing GitHub r
 
 ## Contributing
 
-This workflow is part of the n8n GitHub automation tools collection. For contributions or issues, please refer to the main repository guidelines.
+This workflow is built upon the n8n GitHub Assistant workflow created by [Cole Medin](https://github.com/coleam00), originally part of the [ottomator-agents](https://github.com/coleam00/ottomator-agents/tree/main/n8n-github-assistant) collection.
